@@ -31,18 +31,17 @@ namespace ConsoleApp1
         
         public async Task Get(string url)
         {
-            var config = Configuration.Default;
-            //var context = BrowsingContext.New(config);
-            var context = BrowsingContext.New(config.WithDefaultLoader());//要發送請求用這個
-
-            //var document = await context.OpenAsync(req => req.Content("<h1>Some example source</h1><p>This is a paragraph element"));
-            Console.WriteLine($"連線至{url}");
+            var config = Configuration.Default.WithDefaultLoader();//要抓取網頁資料要WithDefaultLoader;
+           
+            var context = BrowsingContext.New(config);
+                        
+            Console.WriteLine($"準備連線至{url}");
             var document = await context.OpenAsync(url);
-            //Console.WriteLine(document.ToHtml());
+            //Console.WriteLine(document.ToHtml()); //顯示抓取document資料 
+            //Console.WriteLine(document.DocumentElement.OuterHtml);//顯示抓取document資料 
+
             var head = document.QuerySelector("head");
-            var metas = head.QuerySelectorAll("*[property='og:image']");
-            //Console.WriteLine(head.ToHtml());
-                      
+            //Console.WriteLine(head.ToHtml());  //顯示抓取head資料                    
 
             var data = new Meta();
             var type = data.GetType();
@@ -63,8 +62,8 @@ namespace ConsoleApp1
                     Console.WriteLine("找不到");
                 }
             }
-            //Console.WriteLine(document.DocumentElement.OuterHtml);  
 
+            Console.WriteLine("顯示Meta物件的資料");
             Console.WriteLine($"url {data.url}");
             Console.WriteLine($"title {data.title}");
             Console.WriteLine($"site_name {data.site_name}");
