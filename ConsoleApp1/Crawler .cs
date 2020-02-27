@@ -29,7 +29,7 @@ namespace ConsoleApp1
             return s;
         }
         
-        public async Task Get(string url)
+        public async Task<Meta> Get(string url)
         {
             var config = Configuration.Default.WithDefaultLoader();//要抓取網頁資料要WithDefaultLoader;
            
@@ -71,7 +71,8 @@ namespace ConsoleApp1
             Console.WriteLine($"description {data.description}");
             Console.WriteLine($"updated_time {data.updated_time}");
             Console.WriteLine($"published_time {data.published_time}");
-            
+
+            return data;
         }
     }
 }
