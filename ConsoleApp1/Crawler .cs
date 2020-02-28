@@ -42,13 +42,14 @@ namespace ConsoleApp1
         {
             var retry = new RetryWithExponentialBackoff();
             HttpResponseMessage responseMessage ;
-            var d = "";
+            var responseResult = "";
+            
             await retry.RunAsync(async () =>
             {
                 responseMessage = await httpClient.GetAsync(url);
                 if (responseMessage.IsSuccessStatusCode)
                 {
-                    d = responseMessage.Content.ReadAsStringAsync().Result;
+                    responseResult = responseMessage.Content.ReadAsStringAsync().Result;
                 }
                 else
                 {
@@ -65,7 +66,7 @@ namespace ConsoleApp1
             var context = BrowsingContext.New(config);
                         
             Console.WriteLine($"準備連線至{url}");
-            var document = await context.OpenAsync(res=>res.Content(d));
+            var document = await context.OpenAsync(res=>res.Content(responseResult));
             //Console.WriteLine(document.ToHtml()); //顯示抓取document資料 
             //Console.WriteLine(document.DocumentElement.OuterHtml);//顯示抓取document資料 
 
