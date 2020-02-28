@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using System.Threading.Tasks;
+using ConsoleApp1.Models;
 
 namespace ConsoleApp1
 {
