@@ -13,20 +13,18 @@ namespace ConsoleApp1
     class Target
     {
         HttpClient HttpClient { get; }
-        public Target()
-        {
-            var serviceProvider = new ServiceCollection().AddHttpClient().BuildServiceProvider();
-
-            var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
-
-            HttpClient = httpClientFactory.CreateClient();
+        IHttpClientFactory httpClientFactory { get; }
+        public Target(IHttpClientFactory _httpClientFactory)
+        {            
+            HttpClient = _httpClientFactory.CreateClient();
+            httpClientFactory = _httpClientFactory;
         }
 
         public async Task JsonDecode(string dataString)
         {
             var list = JsonSerializer.Deserialize<List<w3hexschoolData>>(dataString);
             var newList = new List<w3hexschoolDataWithMeta>();
-            Crawler crawler = new Crawler();
+            Crawler crawler = new Crawler(httpClientFactory);
             foreach (var item in list)
             {                
                 Console.WriteLine(item.name);

@@ -13,13 +13,10 @@ namespace ConsoleApp1
     class Crawler
     {
         readonly HttpClient httpClient;
-        public Crawler()
+        
+        public Crawler(IHttpClientFactory _httpClientFactory)
         {
-            var serviceProvider = new ServiceCollection().AddHttpClient().BuildServiceProvider();
-
-            var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
-
-            httpClient = httpClientFactory.CreateClient();
+            httpClient = _httpClientFactory.CreateClient();
         }
         private string SelectScript(string propertieyName)
         {
