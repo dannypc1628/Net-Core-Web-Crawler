@@ -24,7 +24,7 @@ namespace ConsoleApp1
         {
             var list = JsonSerializer.Deserialize<List<w3hexschoolData>>(dataString);
             var newList = new List<w3hexschoolDataWithMeta>();
-            Crawler crawler = new Crawler(httpClientFactory);
+           
             foreach (var item in list)
             {                
                 Console.WriteLine(item.name);
@@ -34,6 +34,8 @@ namespace ConsoleApp1
                 {
                     foreach (var page in item.blogList)
                     {
+                        Crawler crawler = new Crawler(httpClientFactory);
+
                         Console.Write("    ");
                         Console.WriteLine(page.title + "    " + page.url);
                         Console.WriteLine();
