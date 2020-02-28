@@ -43,19 +43,25 @@ namespace ConsoleApp1
             var retry = new RetryWithExponentialBackoff();
             HttpResponseMessage responseMessage ;
             var responseResult = "";
-            
+            var data = new Meta();
+
             await retry.RunAsync(async () =>
             {
                 responseMessage = await httpClient.GetAsync(url);
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     responseResult = responseMessage.Content.ReadAsStringAsync().Result;
+                    data.not_found = false;
                 }
                 else
                 {
                     if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                     {
                         Console.WriteLine(responseMessage.StatusCode);
+                        if (responseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+                        {
+                            data.not_found = true;
+                        }
                     }
                 }
             });
@@ -73,7 +79,7 @@ namespace ConsoleApp1
             var head = document.QuerySelector("head");
             //Console.WriteLine(head.ToHtml());  //顯示抓取head資料                    
 
-            var data = new Meta();
+            
             var type = data.GetType();
             var properties = type.GetProperties();
 
