@@ -40,12 +40,26 @@ namespace ConsoleApp1
         
         public async Task<Meta> Get(string url)
         {
-            var responseMessage = await httpClient.GetAsync(url);
+            var retry = new RetryWithExponentialBackoff();
+            HttpResponseMessage responseMessage ;
             var d = "";
-            if (responseMessage.IsSuccessStatusCode)
+            await retry.RunAsync(async () =>
             {
-                 d = responseMessage.Content.ReadAsStringAsync().Result;
-            }
+                responseMessage = await httpClient.GetAsync(url);
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    d = responseMessage.Content.ReadAsStringAsync().Result;
+                }
+                else
+                {
+                    if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        Console.WriteLine(responseMessage.StatusCode);
+                    }
+                }
+            });
+            
+            
             var config = Configuration.Default;
            
             var context = BrowsingContext.New(config);
