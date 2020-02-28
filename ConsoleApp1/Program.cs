@@ -23,7 +23,7 @@ namespace ConsoleApp1
             {
                 Console.WriteLine(data);
 
-                target.JsonDecode(data);
+                await target.JsonDecode(data);
             }
 
             Console.WriteLine("End~~~");
