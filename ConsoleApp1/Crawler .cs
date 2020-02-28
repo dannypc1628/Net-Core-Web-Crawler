@@ -5,11 +5,22 @@ using System.Text;
 using System.Reflection;
 using System.Threading.Tasks;
 using ConsoleApp1.Models;
+using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ConsoleApp1
 {
     class Crawler
-    {        
+    {
+        readonly HttpClient httpClient;
+        public Crawler()
+        {
+            var serviceProvider = new ServiceCollection().AddHttpClient().BuildServiceProvider();
+
+            var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
+
+            httpClient = httpClientFactory.CreateClient();
+        }
         private string SelectScript(string propertieyName)
         {
             string start = "*[property = '";
@@ -32,12 +43,18 @@ namespace ConsoleApp1
         
         public async Task<Meta> Get(string url)
         {
-            var config = Configuration.Default.WithDefaultLoader();//要抓取網頁資料要WithDefaultLoader;
+            var responseMessage = await httpClient.GetAsync(url);
+            var d = "";
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                 d = responseMessage.Content.ReadAsStringAsync().Result;
+            }
+            var config = Configuration.Default;
            
             var context = BrowsingContext.New(config);
                         
             Console.WriteLine($"準備連線至{url}");
-            var document = await context.OpenAsync(url);
+            var document = await context.OpenAsync(res=>res.Content(d));
             //Console.WriteLine(document.ToHtml()); //顯示抓取document資料 
             //Console.WriteLine(document.DocumentElement.OuterHtml);//顯示抓取document資料 
 
