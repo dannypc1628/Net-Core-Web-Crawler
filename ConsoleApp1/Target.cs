@@ -20,7 +20,7 @@ namespace ConsoleApp1
 
             HttpClient = httpClientFactory.CreateClient();
         }
-        
+                
         public async Task<string> Get(string url)
         {
             var responseMessage = await HttpClient.GetAsync(url);
@@ -28,8 +28,7 @@ namespace ConsoleApp1
             {
                 var dataResult = await responseMessage.Content.ReadAsStringAsync();
                 //var list = JsonSerializer.Deserialize<List<object>>(dataResult);
-                
-                Console.WriteLine(dataResult);
+                                
                 return dataResult;
             }
             else{
