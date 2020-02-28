@@ -20,7 +20,26 @@ namespace ConsoleApp1
 
             HttpClient = httpClientFactory.CreateClient();
         }
-                
+
+        public void JsonDecode(string dataString)
+        {
+            var list = JsonSerializer.Deserialize<List<w3hexschoolData>>(dataString);
+            foreach (var item in list)
+            {
+                Console.WriteLine(item.name);
+
+                if (item.blogList != null)
+                {
+                    foreach (var page in item.blogList)
+                    {
+                        Console.Write("    ");
+                        Console.WriteLine(page.title + "    " + page.url);
+                        Console.WriteLine();
+                    }
+                }
+            }
+        }
+
         public async Task<string> Get(string url)
         {
             var responseMessage = await HttpClient.GetAsync(url);
