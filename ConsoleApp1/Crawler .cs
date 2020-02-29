@@ -45,22 +45,29 @@ namespace ConsoleApp1
             var responseResult = "";
             Meta meta = new Meta();
 
-            await retry.RunAsync(async () =>
-            {
-                responseMessage = await httpClient.GetAsync(url);
-                if (responseMessage.IsSuccessStatusCode)
+            try {
+                await retry.RunAsync(async () =>
                 {
-                    responseResult = responseMessage.Content.ReadAsStringAsync().Result;                    
-                }
-                else
-                {
-                    if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                    responseMessage = await httpClient.GetAsync(url);
+                    if (responseMessage.IsSuccessStatusCode)
                     {
-                        Console.WriteLine(responseMessage.StatusCode);                        
+                        responseResult =  responseMessage.Content.ReadAsStringAsync().Result;                        
                     }
-                }
-                meta.http_status_code = (int)responseMessage.StatusCode;
-            });
+                    else
+                    {
+                        if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                        {
+                            Console.WriteLine(responseMessage.StatusCode);
+                        }
+                    }
+                    meta.http_status_code = (int)responseMessage.StatusCode;
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message+ ex.InnerException.Message);
+                meta.http_status_code = 500;
+            }
             
             
             var config = Configuration.Default;
@@ -82,16 +89,16 @@ namespace ConsoleApp1
             foreach (var property in properties)
             {
                 var note = head.QuerySelector(SelectScript(property.Name));
-                Console.WriteLine(property.Name);
+                //Console.WriteLine(property.Name);
                 if (note != null)
                 {
-                    Console.Write($"     ");
-                    Console.WriteLine(note.GetAttribute("content"));
+                   // Console.Write($"     ");
+                   // Console.WriteLine(note.GetAttribute("content"));
                     property.SetValue(meta,note.GetAttribute("content"));
                 }
                 else
                 {
-                    Console.WriteLine("找不到");
+                   // Console.WriteLine("找不到");
                 }
             }
 
