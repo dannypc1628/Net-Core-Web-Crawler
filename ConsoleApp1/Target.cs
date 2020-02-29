@@ -19,6 +19,18 @@ namespace ConsoleApp1
             HttpClient = _httpClientFactory.CreateClient();
             httpClientFactory = _httpClientFactory;
         }
+        public async Task<Meta> CrawlingPageAsync(string url,string title)
+        {
+            Crawler crawler = new Crawler(httpClientFactory);
+
+            Meta meta = await crawler.Get(url);
+            meta.url = url;
+            if (true == string.IsNullOrEmpty(meta.title))
+            {
+                meta.title = title;
+            }
+            return meta;
+        }
 
         public async Task JsonDecode(string dataString)
         {
@@ -29,27 +41,19 @@ namespace ConsoleApp1
             {                
                 Console.WriteLine(item.name);
                 var newW3hexSchoolData = new w3hexschoolDataWithMeta();
-                var newBlogList = new List<Meta>();
+                Meta[] metas=new Meta[]{ };
                 if (item.blogList != null)
-                {
+                {                    
+                    Task<Meta>[] allTasks = new Task<Meta>[item.blogList.Count];
+                    int i = 0;
                     foreach (var page in item.blogList)
                     {
-                        Crawler crawler = new Crawler(httpClientFactory);
-
-                        Console.Write("    ");
-                        Console.WriteLine(page.title + "    " + page.url);
-                        Console.WriteLine();
-                        
-                        Meta meta = await crawler.Get(page.url);
-                        meta.url = page.url;
-                        if (true == string.IsNullOrEmpty(meta.title))
-                        {
-                            meta.title = page.title;
-                        }
-                        newBlogList.Add(meta);
+                        allTasks[i] = CrawlingPageAsync(page.url, page.title);
+                        i++;
                     }
+                    metas = await Task.WhenAll(allTasks);                    
                 }
-                newW3hexSchoolData.blogList = newBlogList;
+                newW3hexSchoolData.blogList = metas;
                 newW3hexSchoolData.name = item.name;
                 newW3hexSchoolData.updateTime = item.updateTime;
                 newW3hexSchoolData.blogUrl = item.blogUrl;
@@ -62,14 +66,10 @@ namespace ConsoleApp1
             Console.WriteLine("進行SaveToJson");
             var json = JsonSerializer.Serialize<IEnumerable<T>>(data);
 
-            string docPath =
-         Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string docPath = Directory.GetCurrentDirectory();
 
-            // Write the string array to a new file named "WriteLines.txt".
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt")))
-            {
-                outputFile.WriteLine(json);
-            }
+            File.WriteAllText(Path.Combine(docPath, "data.json"), json);                
+             
             Console.WriteLine("儲存完畢");
         }
 
