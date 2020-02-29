@@ -10,9 +10,9 @@ namespace ConsoleApp1
     {
         private readonly int maxRetries, delayMilliseconds, maxDelayMilliseconds;
 
-        public RetryWithExponentialBackoff(int maxRetries = 50,
-            int delayMilliseconds = 200,
-            int maxDelayMilliseconds = 2000)
+        public RetryWithExponentialBackoff(int maxRetries = 5,
+            int delayMilliseconds = 300,
+            int maxDelayMilliseconds = 3000)
         {
             this.maxRetries = maxRetries;
             this.delayMilliseconds = delayMilliseconds;
@@ -31,12 +31,14 @@ namespace ConsoleApp1
             }
             catch (Exception ex) when (ex is TimeoutException ||
                 ex is System.Net.Http.HttpRequestException)
-            {
+            {                
                 Console.WriteLine("Exception raised is: " +
                     ex.GetType().ToString() +
                     " –Message: " + ex.Message +
                     " -- Inner Message: " +
-                    ex.InnerException.Message);
+                    ex.InnerException.Message +
+                    " -- ~~~~~~~Inner Inner Message: " +                    
+                    ex.InnerException.InnerException.Message);
                 await backoff.Delay();
                 Console.WriteLine("goto retry");
                 goto retry;
