@@ -12,6 +12,6 @@ namespace ConsoleApp1.Models
 
         public string updateTime { get; set; }
 
-        public IEnumerable<page> blogList { get;set;}
+        public List<page> blogList { get;set;}
     }    
 }
