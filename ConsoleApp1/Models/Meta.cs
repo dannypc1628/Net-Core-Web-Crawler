@@ -13,6 +13,6 @@ namespace ConsoleApp1.Models
         public string description { get; set; }
         public string updated_time { get; set; }
         public string published_time { get; set; }
-        public bool not_found { get; set; }
+        public int http_status_code { get; set; }
     }
 }

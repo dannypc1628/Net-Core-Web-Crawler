@@ -43,27 +43,23 @@ namespace ConsoleApp1
             var retry = new RetryWithExponentialBackoff();
             HttpResponseMessage responseMessage ;
             var responseResult = "";
-            var data = new Meta();
+            Meta meta = new Meta();
 
             await retry.RunAsync(async () =>
             {
                 responseMessage = await httpClient.GetAsync(url);
                 if (responseMessage.IsSuccessStatusCode)
                 {
-                    responseResult = responseMessage.Content.ReadAsStringAsync().Result;
-                    data.not_found = false;
+                    responseResult = responseMessage.Content.ReadAsStringAsync().Result;                    
                 }
                 else
                 {
                     if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                     {
-                        Console.WriteLine(responseMessage.StatusCode);
-                        if (responseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
-                        {
-                            data.not_found = true;
-                        }
+                        Console.WriteLine(responseMessage.StatusCode);                        
                     }
                 }
+                meta.http_status_code = (int)responseMessage.StatusCode;
             });
             
             
@@ -80,7 +76,7 @@ namespace ConsoleApp1
             //Console.WriteLine(head.ToHtml());  //顯示抓取head資料                    
 
             
-            var type = data.GetType();
+            var type = meta.GetType();
             var properties = type.GetProperties();
 
             foreach (var property in properties)
@@ -91,7 +87,7 @@ namespace ConsoleApp1
                 {
                     Console.Write($"     ");
                     Console.WriteLine(note.GetAttribute("content"));
-                    property.SetValue(data,note.GetAttribute("content"));
+                    property.SetValue(meta,note.GetAttribute("content"));
                 }
                 else
                 {
@@ -100,15 +96,15 @@ namespace ConsoleApp1
             }
 
             Console.WriteLine("顯示Meta物件的資料");
-            Console.WriteLine($"url {data.url}");
-            Console.WriteLine($"title {data.title}");
-            Console.WriteLine($"site_name {data.site_name}");
-            Console.WriteLine($"image {data.image}");
-            Console.WriteLine($"description {data.description}");
-            Console.WriteLine($"updated_time {data.updated_time}");
-            Console.WriteLine($"published_time {data.published_time}");
+            Console.WriteLine($"url {meta.url}");
+            Console.WriteLine($"title {meta.title}");
+            Console.WriteLine($"site_name {meta.site_name}");
+            Console.WriteLine($"image {meta.image}");
+            Console.WriteLine($"description {meta.description}");
+            Console.WriteLine($"updated_time {meta.updated_time}");
+            Console.WriteLine($"published_time {meta.published_time}");
 
-            return data;
+            return meta;
         }
     }
 }
