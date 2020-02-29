@@ -20,11 +20,25 @@ namespace ConsoleApp1
             HttpClient = _httpClientFactory.CreateClient();
             httpClientFactory = _httpClientFactory;
         }
-        public async Task<Meta> CrawlingPageAsync(string url, string title)
+        public async Task<Meta> CrawlingPageAsync(string url, string title , Crawler crawler)
         {
-            Crawler crawler = new Crawler(httpClientFactory);
+            
+            Meta meta = new Meta();
+            try
+            {                
+                meta = await crawler.Get(url);                
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"crawler捕捉到例外異常的物件型別為 : {ex.GetType().Name}");
+                Console.WriteLine("crawler捕捉到例外異常 is: " +
+                    ex.GetType().ToString() +
+                    " –Message: " + ex.Message +
+                    " -- Inner Message: " +
+                    ex.InnerException.Message 
+                    );
+            }
 
-            Meta meta = await crawler.Get(url);
             meta.url = url;
             if (true == string.IsNullOrEmpty(meta.title))
             {
@@ -36,31 +50,15 @@ namespace ConsoleApp1
         {
             var _w3hexschoolDataWithMeta = new w3hexschoolDataWithMeta();
             
-            Meta[] metas = new Meta[] { };
+            List<Meta> metas = new List<Meta>();
             if (data.blogList != null)
             {
-                Task<Meta>[] allTasks = new Task<Meta>[data.blogList.Count];
-                int i = 0;
+                Crawler crawler = new Crawler(httpClientFactory);
+                
                 foreach (var page in data.blogList)
                 {
-                    allTasks[i] = CrawlingPageAsync(page.url, page.title);
-                    i++;
-                }
-                try
-                {
-                    metas = await Task.WhenAll(allTasks);
-                    
-                    //Task.WaitAll(allTasks);
-                }
-                catch (Exception exc)
-                {
-                    Console.WriteLine($"CrawlingPageAsync捕捉到例外異常的物件型別為 : {exc.GetType().Name}");
-                    // 當所有等候工作都執行結束後，可以檢查是否有執行失敗的工作
-                    foreach (Task faulted in allTasks.Where(t => t.IsFaulted))
-                    {
-                        Console.WriteLine(faulted.Exception.InnerException.Message);
-                    }
-                }
+                    metas.Add ( await CrawlingPageAsync(page.url, page.title, crawler));                    
+                }                
             }
             _w3hexschoolDataWithMeta.blogList = metas;
             _w3hexschoolDataWithMeta.name = data.name;
