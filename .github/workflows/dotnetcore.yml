@@ -28,6 +28,7 @@ jobs:
         cd Output       
         git config --local user.email "${{ secrets.email }}"
         git config --local user.name "dannyLiu"
+        git add data.json
         now=$(date +"%F %T")
         git commit -m "在 ${now} 重新上傳" -a
     - name: Push changes
