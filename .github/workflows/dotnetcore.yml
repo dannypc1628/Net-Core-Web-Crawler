@@ -35,4 +35,4 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.key }}
-        repository: w3hexschool-Extension-API
+        repository: dannypc1628/w3hexschool-Extension-API
