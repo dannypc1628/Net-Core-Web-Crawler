@@ -20,15 +20,12 @@ jobs:
       with:
         dotnet-version: '3.1.100'
 
-    - name: Build with dotnet
+    - name: Build with dotnet ,and commit
       run: |
         cd ConsoleApp1
         mkdir Output
         dotnet run
-   
-    - name: Commit files
-      run: |
-        cd Output
+        cd Output       
         git config --local user.email "${{ secrets.email }}"
         git config --local user.name "dannyLiu"
         now=$(date +"%F %T")
