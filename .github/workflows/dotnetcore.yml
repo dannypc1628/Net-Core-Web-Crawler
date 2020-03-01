@@ -21,13 +21,13 @@ jobs:
         dotnet-version: '3.1.100'
 
     - name: Build with dotnet
-      run: 
+      run: |
         cd ConsoleApp1
         mkdir Output
         dotnet run
    
     - name: Commit files
-      run: 
+      run: |
         cd Output
         git config --local user.email "${{ secrets.email }}"
         git config --local user.name "dannyLiu"
