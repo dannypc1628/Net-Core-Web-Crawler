@@ -32,7 +32,7 @@ namespace ConsoleApp1
             }
 
             Console.WriteLine("End~~~");
-            Console.Read();
+            //Console.Read();
         }        
     }
 }

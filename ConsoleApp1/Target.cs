@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -13,11 +14,11 @@ namespace ConsoleApp1
 {
     class Target
     {
-        HttpClient HttpClient { get; }
+        HttpClient httpClient { get; }
         IHttpClientFactory httpClientFactory { get; }
         public Target(IHttpClientFactory _httpClientFactory)
         {
-            HttpClient = _httpClientFactory.CreateClient();
+            httpClient = _httpClientFactory.CreateClient();
             httpClientFactory = _httpClientFactory;
         }
         public async Task<Meta> CrawlingPageAsync(string url, string title , Crawler crawler)
@@ -104,6 +105,14 @@ namespace ConsoleApp1
             var json = JsonSerializer.Serialize<IEnumerable<T>>(data);
 
             string docPath = Directory.GetCurrentDirectory();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                docPath = docPath + "\\Output"; 
+            }
+            else
+            {
+                docPath += "/Output";
+            }
 
             File.WriteAllText(Path.Combine(docPath, "data.json"), json);
 
@@ -112,27 +121,30 @@ namespace ConsoleApp1
 
         public async Task<string> Get(string url)
         {
-            var responseMessage = await HttpClient.GetAsync(url);
-            if (true == responseMessage.IsSuccessStatusCode)
+            var retry = new RetryWithExponentialBackoff();
+            var dataResult = "";
+            try
             {
-                var dataResult = await responseMessage.Content.ReadAsStringAsync();
-                //var list = JsonSerializer.Deserialize<List<object>>(dataResult);
-
-                return dataResult;
-            }
-            else
-            {
-                if (responseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+                await retry.RunAsync(async () =>
                 {
-                    Console.WriteLine("404 NotFound");
-                    return "";
-                }
-                else
-                {
+                    var responseMessage = await httpClient.GetAsync(url);
                     Console.WriteLine(responseMessage.StatusCode);
-                    return "";
-                }
+                    if (true == responseMessage.IsSuccessStatusCode)
+                    {
+                        dataResult = await responseMessage.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        dataResult = responseMessage.StatusCode.ToString();
+                    }
+                });
             }
+            catch (Exception ex)
+            {
+                dataResult = $"{ex.Message} + {ex.InnerException.Message}";
+                Console.WriteLine(dataResult);
+            }
+            return dataResult;
         }
 
 
