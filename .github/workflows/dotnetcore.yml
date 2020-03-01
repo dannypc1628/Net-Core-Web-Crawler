@@ -1,0 +1,40 @@
+name: .NET Core
+
+on:
+  push:
+     branches: 
+     - Net-Core-3.1 
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '0 0 * * *'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.2
+
+    - name: Build with dotnet
+      run: 
+        cd ConsoleApp1
+        mkdir Output
+        dotnet run
+   
+    - name: Commit files
+      run: 
+        cd Output
+        git config --local user.email "${{ secrets.email }}"
+        git config --local user.name "dannyLiu"
+        now=$(date +"%F %T")
+        git commit -m "在 ${now} 重新上傳" -a
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.key }}
+        repository: w3hexschool-Extension-API
