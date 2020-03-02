@@ -24,6 +24,9 @@ jobs:
       run: |
         cd ConsoleApp1
         mkdir Output
+        cd Output
+        git clone https://github.com/dannypc1628/w3hexschool-Extension-API.git
+        cd ..
         dotnet run
         cd Output
         git init       
