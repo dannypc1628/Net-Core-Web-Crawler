@@ -20,11 +20,14 @@ jobs:
       with:
         dotnet-version: '3.1.100'
 
-    - name: Build with dotnet ,and commit
+    - name:  dotnet run
       run: |
         cd ConsoleApp1
         mkdir Output
         dotnet run
+
+    - name: git commit and push
+      run: |
         cd Output
         git init       
         git config --local user.email "${{ secrets.email }}"
@@ -32,8 +35,5 @@ jobs:
         git add data.json
         now=$(date +"%F %T")
         git commit -m "在 ${now} 重新上傳" -a
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.key }}
-        repository: dannypc1628/w3hexschool-Extension-API
+        git remote add origin https://dannypc1628:${{ secrets.key }}@github.com/dannypc1628/Github-Actions-Test.git
+        git push origin master
