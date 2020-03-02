@@ -34,6 +34,6 @@ jobs:
         git config --local user.name "dannyLiu"
         git add data.json
         now=$(date +"%F %T")
-        git commit -m "在 ${now} 重新上傳" -a
+        git commit -m "在格林威治標準時間 ${now} 重新上傳" --amend
         git remote add origin https://dannypc1628:${{ secrets.key }}@github.com/dannypc1628/w3hexschool-Extension-API.git
         git push origin master
