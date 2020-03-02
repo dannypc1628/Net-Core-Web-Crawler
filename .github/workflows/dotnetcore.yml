@@ -20,14 +20,11 @@ jobs:
       with:
         dotnet-version: '3.1.100'
 
-    - name:  dotnet run
+    - name:  dotnet run , git commit and push
       run: |
         cd ConsoleApp1
         mkdir Output
         dotnet run
-
-    - name: git commit and push
-      run: |
         cd Output
         git init       
         git config --local user.email "${{ secrets.email }}"
