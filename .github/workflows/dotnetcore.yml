@@ -25,7 +25,8 @@ jobs:
         cd ConsoleApp1
         mkdir Output
         dotnet run
-        cd Output       
+        cd Output
+        git init       
         git config --local user.email "${{ secrets.email }}"
         git config --local user.name "dannyLiu"
         git add data.json
