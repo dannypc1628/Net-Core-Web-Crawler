@@ -32,5 +32,5 @@ jobs:
         git add data.json
         now=$(date +"%F %T")
         git commit -m "在 ${now} 重新上傳" -a
-        git remote add origin https://dannypc1628:${{ secrets.key }}@github.com/dannypc1628/Github-Actions-Test.git
+        git remote add origin https://dannypc1628:${{ secrets.key }}@github.com/dannypc1628/w3hexschool-Extension-API.git
         git push origin master
