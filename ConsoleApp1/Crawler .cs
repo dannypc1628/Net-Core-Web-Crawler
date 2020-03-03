@@ -13,7 +13,7 @@ namespace ConsoleApp1
     class Crawler
     {
         readonly HttpClient httpClient;
-        
+
         public Crawler(IHttpClientFactory _httpClientFactory)
         {
             httpClient = _httpClientFactory.CreateClient();
@@ -37,21 +37,23 @@ namespace ConsoleApp1
 
             return s;
         }
-        
+
         public async Task<Meta> Get(string url)
         {
             var retry = new RetryWithExponentialBackoff();
-            HttpResponseMessage responseMessage ;
+            HttpResponseMessage responseMessage = new HttpResponseMessage();
             var responseResult = "";
             Meta meta = new Meta();
 
-            try {
+            Console.WriteLine($"準備連線至{url}");
+            try
+            {
                 await retry.RunAsync(async () =>
                 {
                     responseMessage = await httpClient.GetAsync(url);
                     if (responseMessage.IsSuccessStatusCode)
                     {
-                        responseResult =  responseMessage.Content.ReadAsStringAsync().Result;                        
+                        responseResult = responseMessage.Content.ReadAsStringAsync().Result;
                     }
                     else
                     {
@@ -65,24 +67,22 @@ namespace ConsoleApp1
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message+ ex.InnerException.Message);
+                Console.WriteLine(ex.Message + ex.InnerException.Message);
                 meta.http_status_code = 500;
             }
-            
-            
+
+
             var config = Configuration.Default;
-           
+
             var context = BrowsingContext.New(config);
-                        
-            Console.WriteLine($"準備連線至{url}");
-            var document = await context.OpenAsync(res=>res.Content(responseResult));
+
+            var document = await context.OpenAsync(res => res.Content(responseResult));
             //Console.WriteLine(document.ToHtml()); //顯示抓取document資料 
             //Console.WriteLine(document.DocumentElement.OuterHtml);//顯示抓取document資料 
 
             var head = document.QuerySelector("head");
             //Console.WriteLine(head.ToHtml());  //顯示抓取head資料                    
 
-            
             var type = meta.GetType();
             var properties = type.GetProperties();
 
@@ -92,13 +92,11 @@ namespace ConsoleApp1
                 //Console.WriteLine(property.Name);
                 if (note != null)
                 {
-                   // Console.Write($"     ");
-                   // Console.WriteLine(note.GetAttribute("content"));
-                    property.SetValue(meta,note.GetAttribute("content"));
-                }
-                else
-                {
-                   // Console.WriteLine("找不到");
+                    if ("image" == property.Name)
+                    {
+                        note.SetAttribute("content", Checker.UrlWithHost(note.GetAttribute("content"), responseMessage));
+                    }
+                    property.SetValue(meta, note.GetAttribute("content"));
                 }
             }
 
