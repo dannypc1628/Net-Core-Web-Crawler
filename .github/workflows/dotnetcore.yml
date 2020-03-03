@@ -22,16 +22,13 @@ jobs:
 
     - name:  dotnet run , git commit and push
       run: |
-        cd ConsoleApp1
-        mkdir Output      
+        cd ConsoleApp1        
+        git clone https://dannypc1628:${{ secrets.key }}@github.com/dannypc1628/w3hexschool-Extension-API.git Output
         dotnet run
-        cd Output
-        git init       
+        cd Output               
         git config --local user.email "${{ secrets.email }}"
         git config --local user.name "dannyLiu"
         git add data.json
-        now=$(date +"%F %T")        
-        git remote add origin https://dannypc1628:${{ secrets.key }}@github.com/dannypc1628/w3hexschool-Extension-API.git
-        git pull
-        git commit -m "在格林威治標準時間 ${now} 重新上傳" -a
+        now=$(date +"%F %T")
+        git commit -m "在國際標準時間 ${now} 重新上傳" -a
         git push origin master
