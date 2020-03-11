@@ -6,6 +6,7 @@ namespace ConsoleApp1.Models
 {
     class w3hexschoolDataWithMeta
     {
+        public int keyID { get; set; }
         public string name { get; set; }
 
         public string blogUrl { get; set; }

@@ -62,6 +62,7 @@ namespace ConsoleApp1
                 }                
             }
             _w3hexschoolDataWithMeta.blogList = metas;
+            _w3hexschoolDataWithMeta.keyID = data.keyID;
             _w3hexschoolDataWithMeta.name = data.name;
             _w3hexschoolDataWithMeta.updateTime = data.updateTime;
             _w3hexschoolDataWithMeta.blogUrl = data.blogUrl;
